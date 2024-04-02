@@ -7,3 +7,7 @@ import (
 type GetByID interface {
 	GetByID(id interface{}) (model.Entity, error)
 }
+
+type Persist interface {
+	Persist(entity model.Entity) error
+}
