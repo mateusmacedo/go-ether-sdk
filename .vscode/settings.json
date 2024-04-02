@@ -10,6 +10,7 @@
         "query": "Mappings",
         "resilience": "Components",
         "collection": "Cluster",
+        "repository": "Database",
     },
     "go.coverOnSave": true,
     "go.coverageDecorator": {
