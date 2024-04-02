@@ -1,4 +1,4 @@
-package blog
+package model
 
 type Comment struct {
 	id      int
