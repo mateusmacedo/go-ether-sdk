@@ -5,6 +5,7 @@ import (
 
 	apperr "github.com/mateusmacedo/go-ether-sdk/application/err"
 	appmsg "github.com/mateusmacedo/go-ether-sdk/application/message"
+	"github.com/mateusmacedo/go-ether-sdk/application/test/helper"
 
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/handler"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/message"
@@ -56,6 +57,21 @@ func Test_findByNameHandler_Handle(t *testing.T) {
 			want:    nil,
 			wantErr: true,
 			errWant: apperr.ErrMessageContentEmpty,
+		},
+		{
+			name: "Test should return error when not type of valid message",
+			fields: fields{
+				repo: func() repository.FindByName {
+					repoImpl := mockRep.NewFindByName(t)
+					return repoImpl
+				}(),
+			},
+			args: args{
+				m: &helper.InvalidMessage{},
+			},
+			want:    nil,
+			wantErr: true,
+			errWant: apperr.ErrMessageNotSupported,
 		},
 	}
 	for _, tt := range tests {

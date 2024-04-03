@@ -39,5 +39,9 @@ func (h *findByNameHandler) Handle(m appmsg.Message) (appmsg.Message, error) {
 		return nil, apperr.ErrMessageContentEmpty
 	}
 
+	if _, ok := m.(*appmsg.VoidMessage); !ok {
+		return nil, apperr.ErrMessageNotSupported
+	}
+
 	return appmsg.VoidMessage{}, apperr.ErrHandlerNotImplemented
 }
