@@ -90,6 +90,27 @@ func Test_registerAuthorHandler_Handle(t *testing.T) {
 			wantErr: true,
 			errWant: err.ErrInternalHandler,
 		},
+		{
+			name: "Test should return error when repository returns error",
+			fields: fields{
+				srv: func() service.RegisterNewAuthorService {
+					srvImpl := mockSrv.NewRegisterNewAuthorService(t)
+					srvImpl.On("RegisterNewAuthor", mock.Anything).Return(nil)
+					return srvImpl
+				}(),
+				repo: func() repository.AuthorRepository {
+					repoImpl := mockRep.NewAuthorRepository(t)
+					repoImpl.On("Persist", mock.Anything).Return(err.ErrInternalHandler)
+					return repoImpl
+				}(),
+			},
+			args: args{
+				m: blogmsg.NewRegisterAuthor(blogmsg.WithName("John Doe")),
+			},
+			want:    nil,
+			wantErr: true,
+			errWant: err.ErrInternalHandler,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(tR *testing.T) {
