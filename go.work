@@ -1,4 +1,8 @@
 go 1.22.0
 
 use ./pkg/domain
-use ./test/fixture/blog
+
+use (
+	./pkg/application
+	./test/fixture/blog
+)
