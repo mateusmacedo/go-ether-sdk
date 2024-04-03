@@ -5,11 +5,13 @@ import (
 
 	"github.com/mateusmacedo/go-ether-sdk/application/err"
 	"github.com/mateusmacedo/go-ether-sdk/application/message"
+	"github.com/stretchr/testify/mock"
 
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/handler"
 	blogmsg "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/message"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/repository"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/service"
+	mockSrv "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/mocks/domain/service"
 )
 
 func Test_registerAuthorHandler_Handle(t *testing.T) {
@@ -54,6 +56,22 @@ func Test_registerAuthorHandler_Handle(t *testing.T) {
 			want:    nil,
 			wantErr: true,
 			errWant: err.ErrMessageContentEmpty,
+		},
+		{
+			name: "Test should return error when service returns error",
+			fields: fields{
+				srv: func() service.RegisterNewAuthorService {
+					srvImpl := mockSrv.NewRegisterNewAuthorService(t)
+					srvImpl.On("RegisterNewAuthor", mock.Anything).Return(err.ErrInternalHandler)
+					return srvImpl
+				}(),
+			},
+			args: args{
+				m: blogmsg.NewRegisterAuthor(blogmsg.WithName("John Doe")),
+			},
+			want:    nil,
+			wantErr: true,
+			errWant: err.ErrInternalHandler,
 		},
 	}
 	for _, tt := range tests {
