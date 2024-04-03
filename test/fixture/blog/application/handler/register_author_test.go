@@ -11,6 +11,7 @@ import (
 	blogmsg "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/message"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/repository"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/service"
+	mockRep "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/mocks/domain/repository"
 	mockSrv "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/mocks/domain/service"
 )
 
@@ -34,8 +35,14 @@ func Test_registerAuthorHandler_Handle(t *testing.T) {
 		{
 			name: "Test should return error when not type of valid message",
 			fields: fields{
-				srv:  func() service.RegisterNewAuthorService { return nil }(),
-				repo: func() repository.AuthorRepository { return nil }(),
+				srv: func() service.RegisterNewAuthorService {
+					srvImpl := mockSrv.NewRegisterNewAuthorService(t)
+					return srvImpl
+				}(),
+				repo: func() repository.AuthorRepository {
+					repoImpl := mockRep.NewAuthorRepository(t)
+					return repoImpl
+				}(),
 			},
 			args: args{
 				m: func() message.Message { return nil }(),
@@ -47,8 +54,14 @@ func Test_registerAuthorHandler_Handle(t *testing.T) {
 		{
 			name: "Test should return error when content is empty",
 			fields: fields{
-				srv:  func() service.RegisterNewAuthorService { return nil }(),
-				repo: func() repository.AuthorRepository { return nil }(),
+				srv: func() service.RegisterNewAuthorService {
+					srvImpl := mockSrv.NewRegisterNewAuthorService(t)
+					return srvImpl
+				}(),
+				repo: func() repository.AuthorRepository {
+					repoImpl := mockRep.NewAuthorRepository(t)
+					return repoImpl
+				}(),
 			},
 			args: args{
 				m: blogmsg.NewRegisterAuthor(),
@@ -64,6 +77,10 @@ func Test_registerAuthorHandler_Handle(t *testing.T) {
 					srvImpl := mockSrv.NewRegisterNewAuthorService(t)
 					srvImpl.On("RegisterNewAuthor", mock.Anything).Return(err.ErrInternalHandler)
 					return srvImpl
+				}(),
+				repo: func() repository.AuthorRepository {
+					repoImpl := mockRep.NewAuthorRepository(t)
+					return repoImpl
 				}(),
 			},
 			args: args{
