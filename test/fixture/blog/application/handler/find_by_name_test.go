@@ -7,6 +7,7 @@ import (
 	appmsg "github.com/mateusmacedo/go-ether-sdk/application/message"
 
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/handler"
+	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/message"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/repository"
 	mockRep "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/mocks/domain/repository"
 )
@@ -36,6 +37,21 @@ func Test_findByNameHandler_Handle(t *testing.T) {
 			},
 			args: args{
 				m: nil,
+			},
+			want:    nil,
+			wantErr: true,
+			errWant: apperr.ErrMessageContentEmpty,
+		},
+		{
+			name: "Test should return error when message is empty",
+			fields: fields{
+				repo: func() repository.FindByName {
+					repoImpl := mockRep.NewFindByName(t)
+					return repoImpl
+				}(),
+			},
+			args: args{
+				m: message.NewFindByNameMessage(""),
 			},
 			want:    nil,
 			wantErr: true,
