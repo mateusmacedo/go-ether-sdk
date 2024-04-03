@@ -1,8 +1,7 @@
 go 1.22.0
 
-use ./pkg/domain
-
 use (
+	./pkg/domain
 	./pkg/application
 	./test/fixture/blog
 )
