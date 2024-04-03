@@ -34,5 +34,10 @@ func (h *findByNameHandler) Handle(m appmsg.Message) (appmsg.Message, error) {
 		return nil, apperr.ErrMessageContentEmpty
 	}
 
+	content := m.Content()
+	if len(content) == 0 {
+		return nil, apperr.ErrMessageContentEmpty
+	}
+
 	return appmsg.VoidMessage{}, apperr.ErrHandlerNotImplemented
 }
