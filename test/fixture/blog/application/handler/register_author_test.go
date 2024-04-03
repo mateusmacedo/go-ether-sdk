@@ -41,6 +41,25 @@ func Test_registerAuthorHandler_Handle(t *testing.T) {
 		errWant error
 	}{
 		{
+			name: "Test should return error when message is nil",
+			fields: fields{
+				srv: func() service.RegisterNewAuthorService {
+					srvImpl := mockSrv.NewRegisterNewAuthorService(t)
+					return srvImpl
+				}(),
+				repo: func() repository.AuthorRepository {
+					repoImpl := mockRep.NewAuthorRepository(t)
+					return repoImpl
+				}(),
+			},
+			args: args{
+				m: nil,
+			},
+			want:    nil,
+			wantErr: true,
+			errWant: apperr.ErrMessageContentEmpty,
+		},
+		{
 			name: "Test should return error when content is empty",
 			fields: fields{
 				srv: func() service.RegisterNewAuthorService {

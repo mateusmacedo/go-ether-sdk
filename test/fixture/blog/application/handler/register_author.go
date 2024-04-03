@@ -41,6 +41,10 @@ func NewRegisterAuthorHandler(opts ...registerAuthorHandlerOption) handler.Handl
 }
 
 func (h *registerAuthorHandler) Handle(m message.Message) (message.Message, error) {
+	if m == nil {
+		return nil, apperr.ErrMessageContentEmpty
+	}
+
 	content := m.Content()
 	if len(content) == 0{
 		return nil, apperr.ErrMessageContentEmpty
