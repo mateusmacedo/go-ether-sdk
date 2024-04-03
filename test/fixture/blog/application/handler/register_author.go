@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/mateusmacedo/go-ether-sdk/application/err"
+	apperr "github.com/mateusmacedo/go-ether-sdk/application/err"
 	"github.com/mateusmacedo/go-ether-sdk/application/handler"
 	"github.com/mateusmacedo/go-ether-sdk/application/message"
 
@@ -41,15 +41,24 @@ func NewRegisterAuthorHandler(opts ...registerAuthorHandlerOption) handler.Handl
 }
 
 func (h *registerAuthorHandler) Handle(m message.Message) (message.Message, error) {
+	content := m.Content()
+	if len(content) == 0{
+		return nil, apperr.ErrMessageContentEmpty
+	}
+
 	if _, ok := m.(*blogmsg.RegisterAuthorMessage); !ok {
-		return nil, err.ErrMessageNotSupported
+		return nil, apperr.ErrMessageNotSupported
 	}
 
-	if len(m.Content()) == 0{
-		return nil, err.ErrMessageContentEmpty
+	name := string(content)
+
+	if got, err := h.repo.FindByName(name); got != nil {
+		return nil, apperr.ErrPersistenceConflict
+	} else if err != nil {
+		return nil, err
 	}
 
-	author := model.NewAuthor(model.WithName(string(m.Content())))
+	author := model.NewAuthor(model.WithName(name))
 
 	if err := h.srv.RegisterNewAuthor(author); err != nil {
 		return nil, err
@@ -59,5 +68,5 @@ func (h *registerAuthorHandler) Handle(m message.Message) (message.Message, erro
 		return nil, err
 	}
 
-	return message.VoidMessage{}, err.ErrHandlerNotImplemented
+	return message.VoidMessage{}, nil
 }

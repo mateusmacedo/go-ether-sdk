@@ -3,17 +3,25 @@ package handler_test
 import (
 	"testing"
 
-	"github.com/mateusmacedo/go-ether-sdk/application/err"
+	apperr "github.com/mateusmacedo/go-ether-sdk/application/err"
 	"github.com/mateusmacedo/go-ether-sdk/application/message"
 	"github.com/stretchr/testify/mock"
 
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/handler"
 	blogmsg "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/message"
+	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/model"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/repository"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/service"
 	mockRep "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/mocks/domain/repository"
 	mockSrv "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/mocks/domain/service"
 )
+
+type invalidMessage struct{
+}
+
+func (m *invalidMessage) Content() message.Content {
+	return []byte("invalid")
+}
 
 func Test_registerAuthorHandler_Handle(t *testing.T) {
 	type fields struct {
@@ -33,25 +41,6 @@ func Test_registerAuthorHandler_Handle(t *testing.T) {
 		errWant error
 	}{
 		{
-			name: "Test should return error when not type of valid message",
-			fields: fields{
-				srv: func() service.RegisterNewAuthorService {
-					srvImpl := mockSrv.NewRegisterNewAuthorService(t)
-					return srvImpl
-				}(),
-				repo: func() repository.AuthorRepository {
-					repoImpl := mockRep.NewAuthorRepository(t)
-					return repoImpl
-				}(),
-			},
-			args: args{
-				m: func() message.Message { return nil }(),
-			},
-			want:    nil,
-			wantErr: true,
-			errWant: err.ErrMessageNotSupported,
-		},
-		{
 			name: "Test should return error when content is empty",
 			fields: fields{
 				srv: func() service.RegisterNewAuthorService {
@@ -68,14 +57,13 @@ func Test_registerAuthorHandler_Handle(t *testing.T) {
 			},
 			want:    nil,
 			wantErr: true,
-			errWant: err.ErrMessageContentEmpty,
+			errWant: apperr.ErrMessageContentEmpty,
 		},
 		{
-			name: "Test should return error when service returns error",
+			name: "Test should return error when not type of valid message",
 			fields: fields{
 				srv: func() service.RegisterNewAuthorService {
 					srvImpl := mockSrv.NewRegisterNewAuthorService(t)
-					srvImpl.On("RegisterNewAuthor", mock.Anything).Return(err.ErrInternalHandler)
 					return srvImpl
 				}(),
 				repo: func() repository.AuthorRepository {
@@ -84,14 +72,75 @@ func Test_registerAuthorHandler_Handle(t *testing.T) {
 				}(),
 			},
 			args: args{
+				m: &invalidMessage{},
+			},
+			want:    nil,
+			wantErr: true,
+			errWant: apperr.ErrMessageNotSupported,
+		},
+		{
+			name: "Test should return error when author already exists",
+			fields: fields{
+				srv: func() service.RegisterNewAuthorService {
+					srvImpl := mockSrv.NewRegisterNewAuthorService(t)
+					return srvImpl
+				}(),
+				repo: func() repository.AuthorRepository {
+					repoImpl := mockRep.NewAuthorRepository(t)
+					repoImpl.On("FindByName", mock.Anything).Return(model.NewAuthor(model.WithName("John Doe")), nil)
+					return repoImpl
+				}(),
+			},
+			args: args{
 				m: blogmsg.NewRegisterAuthor(blogmsg.WithName("John Doe")),
 			},
 			want:    nil,
 			wantErr: true,
-			errWant: err.ErrInternalHandler,
+			errWant: apperr.ErrPersistenceConflict,
 		},
 		{
-			name: "Test should return error when repository returns error",
+			name: "Test should return error when call FindByName on repository and returns error",
+			fields: fields{
+				srv: func() service.RegisterNewAuthorService {
+					srvImpl := mockSrv.NewRegisterNewAuthorService(t)
+					return srvImpl
+				}(),
+				repo: func() repository.AuthorRepository {
+					repoImpl := mockRep.NewAuthorRepository(t)
+					repoImpl.On("FindByName", mock.Anything).Return(nil, apperr.ErrInternalHandler)
+					return repoImpl
+				}(),
+			},
+			args: args{
+				m: blogmsg.NewRegisterAuthor(blogmsg.WithName("John Doe")),
+			},
+			want:    nil,
+			wantErr: true,
+			errWant: apperr.ErrInternalHandler,
+		},
+		{
+			name: "Test should return error when call RegisterNewAuthor on service and returns error",
+			fields: fields{
+				srv: func() service.RegisterNewAuthorService {
+					srvImpl := mockSrv.NewRegisterNewAuthorService(t)
+					srvImpl.On("RegisterNewAuthor", mock.Anything).Return(apperr.ErrInternalHandler)
+					return srvImpl
+				}(),
+				repo: func() repository.AuthorRepository {
+					repoImpl := mockRep.NewAuthorRepository(t)
+					repoImpl.On("FindByName", mock.Anything).Return(nil, nil)
+					return repoImpl
+				}(),
+			},
+			args: args{
+				m: blogmsg.NewRegisterAuthor(blogmsg.WithName("John Doe")),
+			},
+			want:    nil,
+			wantErr: true,
+			errWant: apperr.ErrInternalHandler,
+		},
+		{
+			name: "Test should return error when call Persist on repository and returns error",
 			fields: fields{
 				srv: func() service.RegisterNewAuthorService {
 					srvImpl := mockSrv.NewRegisterNewAuthorService(t)
@@ -100,7 +149,8 @@ func Test_registerAuthorHandler_Handle(t *testing.T) {
 				}(),
 				repo: func() repository.AuthorRepository {
 					repoImpl := mockRep.NewAuthorRepository(t)
-					repoImpl.On("Persist", mock.Anything).Return(err.ErrInternalHandler)
+					repoImpl.On("FindByName", mock.Anything).Return(nil, nil)
+					repoImpl.On("Persist", mock.Anything).Return(apperr.ErrInternalHandler)
 					return repoImpl
 				}(),
 			},
@@ -109,7 +159,29 @@ func Test_registerAuthorHandler_Handle(t *testing.T) {
 			},
 			want:    nil,
 			wantErr: true,
-			errWant: err.ErrInternalHandler,
+			errWant: apperr.ErrInternalHandler,
+		},
+		{
+			name: "Test should return void and nil error when all operations are successful",
+			fields: fields{
+				srv: func() service.RegisterNewAuthorService {
+					srvImpl := mockSrv.NewRegisterNewAuthorService(t)
+					srvImpl.On("RegisterNewAuthor", mock.Anything).Return(nil)
+					return srvImpl
+				}(),
+				repo: func() repository.AuthorRepository {
+					repoImpl := mockRep.NewAuthorRepository(t)
+					repoImpl.On("FindByName", mock.Anything).Return(nil, nil)
+					repoImpl.On("Persist", mock.Anything).Return(nil)
+					return repoImpl
+				}(),
+			},
+			args: args{
+				m: blogmsg.NewRegisterAuthor(blogmsg.WithName("John Doe")),
+			},
+			want:    message.VoidMessage{},
+			wantErr: false,
+			errWant: nil,
 		},
 	}
 	for _, tt := range tests {
