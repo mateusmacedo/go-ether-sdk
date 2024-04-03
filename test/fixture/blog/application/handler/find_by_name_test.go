@@ -1,6 +1,7 @@
 package handler_test
 
 import (
+	"reflect"
 	"testing"
 
 	apperr "github.com/mateusmacedo/go-ether-sdk/application/err"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/handler"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/message"
+	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/model"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/repository"
 	mockRep "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/mocks/domain/repository"
 )
@@ -20,6 +22,7 @@ func Test_findByNameHandler_Handle(t *testing.T) {
 	type args struct {
 		m appmsg.Message
 	}
+	var authorStub *model.Author
 	tests := []struct {
 		name    string
 		fields  fields
@@ -89,6 +92,27 @@ func Test_findByNameHandler_Handle(t *testing.T) {
 			wantErr: true,
 			errWant: apperr.ErrInternalHandler,
 		},
+		{
+			name: "Test should return message record when call find by name on repository err is nil",
+			fields: fields{
+				repo: func() repository.FindByName {
+					authorStub = model.NewAuthor(
+						model.WithID(1),
+						model.WithVersion(1),
+						model.WithName("name"),
+					)
+					repoImpl := mockRep.NewFindByName(t)
+					repoImpl.On("FindByName", "name").Return(authorStub, nil)
+					return repoImpl
+				}(),
+			},
+			args: args{
+				m: message.NewFindByNameMessage("name"),
+			},
+			want:    message.NewFindByNameMessageResult(authorStub),
+			wantErr: false,
+			errWant: nil,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(tR *testing.T) {
@@ -106,7 +130,7 @@ func Test_findByNameHandler_Handle(t *testing.T) {
 				return
 			}
 
-			if got != tt.want {
+			if !reflect.DeepEqual(got, tt.want) {
 				tR.Errorf("findByNameHandler.Handle() = %v, want %v", got, tt.want)
 			}
 		})
