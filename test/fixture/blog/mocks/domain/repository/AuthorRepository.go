@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	model "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/model"
+	model "github.com/mateusmacedo/go-ether-sdk/domain/model"
 	repository "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/repository"
 	mock "github.com/stretchr/testify/mock"
 )
@@ -43,17 +43,47 @@ func (_m *AuthorRepository) FindByName(name string) (repository.FindByNameResult
 	return r0, r1
 }
 
-// Persist provides a mock function with given fields: author
-func (_m *AuthorRepository) Persist(author *model.Author) error {
-	ret := _m.Called(author)
+// GetByID provides a mock function with given fields: id
+func (_m *AuthorRepository) GetByID(id interface{}) (model.Entity, error) {
+	ret := _m.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetByID")
+	}
+
+	var r0 model.Entity
+	var r1 error
+	if rf, ok := ret.Get(0).(func(interface{}) (model.Entity, error)); ok {
+		return rf(id)
+	}
+	if rf, ok := ret.Get(0).(func(interface{}) model.Entity); ok {
+		r0 = rf(id)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(model.Entity)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(interface{}) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// Persist provides a mock function with given fields: entity
+func (_m *AuthorRepository) Persist(entity model.Entity) error {
+	ret := _m.Called(entity)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Persist")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*model.Author) error); ok {
-		r0 = rf(author)
+	if rf, ok := ret.Get(0).(func(model.Entity) error); ok {
+		r0 = rf(entity)
 	} else {
 		r0 = ret.Error(0)
 	}
