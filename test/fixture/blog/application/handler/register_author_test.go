@@ -7,6 +7,7 @@ import (
 	"github.com/mateusmacedo/go-ether-sdk/application/message"
 
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/handler"
+	blogmsg "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/message"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/repository"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/service"
 )
@@ -40,6 +41,19 @@ func Test_registerAuthorHandler_Handle(t *testing.T) {
 			want:    nil,
 			wantErr: true,
 			errWant: err.ErrMessageNotSupported,
+		},
+		{
+			name: "Test should return error when content is empty",
+			fields: fields{
+				srv:  func() service.RegisterNewAuthorService { return nil }(),
+				repo: func() repository.AuthorRepository { return nil }(),
+			},
+			args: args{
+				m: blogmsg.NewRegisterAuthor(),
+			},
+			want:    nil,
+			wantErr: true,
+			errWant: err.ErrMessageContentEmpty,
 		},
 	}
 	for _, tt := range tests {
