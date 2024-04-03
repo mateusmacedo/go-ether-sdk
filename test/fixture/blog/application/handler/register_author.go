@@ -6,6 +6,7 @@ import (
 	"github.com/mateusmacedo/go-ether-sdk/application/message"
 
 	blogmsg "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/message"
+	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/model"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/repository"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/service"
 )
@@ -46,6 +47,12 @@ func (h *registerAuthorHandler) Handle(m message.Message) (message.Message, erro
 
 	if len(m.Content()) == 0{
 		return nil, err.ErrMessageContentEmpty
+	}
+
+	author := model.NewAuthor(model.WithName(string(m.Content())))
+
+	if err := h.srv.RegisterNewAuthor(author); err != nil {
+		return nil, err
 	}
 
 	return nil, err.ErrHandlerNotImplemented
