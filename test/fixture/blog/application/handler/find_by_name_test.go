@@ -22,7 +22,7 @@ func Test_findByNameHandler_Handle(t *testing.T) {
 	type args struct {
 		m appmsg.Message
 	}
-	var authorStub *model.Author
+	var findResult = repository.FindByNameResult{}
 	tests := []struct {
 		name    string
 		fields  fields
@@ -96,20 +96,24 @@ func Test_findByNameHandler_Handle(t *testing.T) {
 			name: "Test should return message record when call find by name on repository err is nil",
 			fields: fields{
 				repo: func() repository.FindByName {
-					authorStub = model.NewAuthor(
+					findResult = append(findResult, model.NewAuthor(
 						model.WithID(1),
 						model.WithVersion(1),
 						model.WithName("name"),
-					)
+					), model.NewAuthor(
+						model.WithID(2),
+						model.WithVersion(1),
+						model.WithName("name"),
+					))
 					repoImpl := mockRep.NewFindByName(t)
-					repoImpl.On("FindByName", "name").Return(authorStub, nil)
+					repoImpl.On("FindByName", "name").Return(findResult, nil)
 					return repoImpl
 				}(),
 			},
 			args: args{
 				m: message.NewFindByNameMessage("name"),
 			},
-			want:    message.NewFindByNameMessageResult(authorStub),
+			want:    message.NewFindByNameMessageResult(findResult),
 			wantErr: false,
 			errWant: nil,
 		},
