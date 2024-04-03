@@ -21,7 +21,7 @@ func NewFindByNameMessage(name string) message.Message {
 }
 
 type FindByNameMessageResult []struct {
-	ID   int `json:"id"`
+	ID   interface{} `json:"id"`
 	Version int `json:"version"`
 	Name string `json:"name"`
 }
@@ -35,7 +35,7 @@ func NewFindByNameMessageResult(authors repository.FindByNameResult) message.Mes
 	result := make(FindByNameMessageResult, 0)
 	for _, author := range authors {
 		result = append(result, struct {
-			ID   int `json:"id"`
+			ID   interface{} `json:"id"`
 			Version int `json:"version"`
 			Name string `json:"name"`
 		}{

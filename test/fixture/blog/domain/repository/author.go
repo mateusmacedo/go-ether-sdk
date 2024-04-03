@@ -1,6 +1,8 @@
 package repository
 
 import (
+	apprepo "github.com/mateusmacedo/go-ether-sdk/domain/repository"
+
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/model"
 )
 
@@ -11,6 +13,7 @@ type FindByName interface {
 }
 
 type AuthorRepository interface {
+	apprepo.GetByID
+	apprepo.Persist
 	FindByName
-	Persist(author *model.Author) error
 }

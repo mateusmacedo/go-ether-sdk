@@ -1,7 +1,7 @@
 package model
 
 type Author struct {
-	id      int
+	id      interface{}
 	version int
 	name    string
 }
@@ -16,7 +16,7 @@ func NewAuthor(opts ...AuthorOption) *Author {
 	return a
 }
 
-func (a *Author) ID() int {
+func (a *Author) ID() interface{} {
 	return a.id
 }
 
@@ -28,7 +28,7 @@ func (a *Author) Name() string {
 	return a.name
 }
 
-func WithID(id int) AuthorOption {
+func WithID(id interface{}) AuthorOption {
 	return func(a *Author) error {
 		a.id = id
 		return nil
