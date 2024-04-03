@@ -13,22 +13,24 @@ type AuthorRepository struct {
 }
 
 // FindByName provides a mock function with given fields: name
-func (_m *AuthorRepository) FindByName(name string) (model.Author, error) {
+func (_m *AuthorRepository) FindByName(name string) (*model.Author, error) {
 	ret := _m.Called(name)
 
 	if len(ret) == 0 {
 		panic("no return value specified for FindByName")
 	}
 
-	var r0 model.Author
+	var r0 *model.Author
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string) (model.Author, error)); ok {
+	if rf, ok := ret.Get(0).(func(string) (*model.Author, error)); ok {
 		return rf(name)
 	}
-	if rf, ok := ret.Get(0).(func(string) model.Author); ok {
+	if rf, ok := ret.Get(0).(func(string) *model.Author); ok {
 		r0 = rf(name)
 	} else {
-		r0 = ret.Get(0).(model.Author)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.Author)
+		}
 	}
 
 	if rf, ok := ret.Get(1).(func(string) error); ok {
@@ -41,7 +43,7 @@ func (_m *AuthorRepository) FindByName(name string) (model.Author, error) {
 }
 
 // Persist provides a mock function with given fields: author
-func (_m *AuthorRepository) Persist(author model.Author) error {
+func (_m *AuthorRepository) Persist(author *model.Author) error {
 	ret := _m.Called(author)
 
 	if len(ret) == 0 {
@@ -49,7 +51,7 @@ func (_m *AuthorRepository) Persist(author model.Author) error {
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(model.Author) error); ok {
+	if rf, ok := ret.Get(0).(func(*model.Author) error); ok {
 		r0 = rf(author)
 	} else {
 		r0 = ret.Error(0)
