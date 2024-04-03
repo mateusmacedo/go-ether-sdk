@@ -7,3 +7,7 @@ import (
 type RegisterNewAuthorService interface {
 	RegisterNewAuthor(author *model.Author) error
 }
+
+type FindAuthorByNameService interface {
+	FindAuthorByName(name string) (*model.Author, error)
+}
