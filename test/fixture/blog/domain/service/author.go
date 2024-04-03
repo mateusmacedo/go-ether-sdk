@@ -5,5 +5,5 @@ import (
 )
 
 type RegisterNewAuthorService interface {
-	RegisterNewAuthor(author model.Author) error
+	RegisterNewAuthor(author *model.Author) error
 }
