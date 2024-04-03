@@ -8,6 +8,7 @@ replace github.com/mateusmacedo/go-ether-sdk/application => ../../../pkg/applica
 
 require (
 	github.com/mateusmacedo/go-ether-sdk/application v0.0.0-00010101000000-000000000000
+	github.com/mateusmacedo/go-ether-sdk/domain v0.0.0-00010101000000-000000000000
 	github.com/stretchr/testify v1.9.0
 )
 
