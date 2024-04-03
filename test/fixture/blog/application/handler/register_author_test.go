@@ -9,7 +9,6 @@ import (
 
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/handler"
 	blogmsg "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/message"
-	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/model"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/repository"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/service"
 	mockRep "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/mocks/domain/repository"
@@ -31,6 +30,7 @@ func Test_registerAuthorHandler_Handle(t *testing.T) {
 	type args struct {
 		m message.Message
 	}
+	var findResult = make(repository.FindByNameResult, 0)
 
 	tests := []struct {
 		name    string
@@ -106,7 +106,7 @@ func Test_registerAuthorHandler_Handle(t *testing.T) {
 				}(),
 				repo: func() repository.AuthorRepository {
 					repoImpl := mockRep.NewAuthorRepository(t)
-					repoImpl.On("FindByName", mock.Anything).Return(model.NewAuthor(model.WithName("John Doe")), nil)
+					repoImpl.On("FindByName", mock.Anything).Return(findResult, nil)
 					return repoImpl
 				}(),
 			},
