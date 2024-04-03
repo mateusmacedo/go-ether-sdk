@@ -44,10 +44,10 @@ func (h *findByNameHandler) Handle(m appmsg.Message) (appmsg.Message, error) {
 		return nil, apperr.ErrMessageNotSupported
 	}
 
-	_, err := h.repo.FindByName(string(content))
+	got, err := h.repo.FindByName(string(content))
 	if err != nil {
 		return nil, err
 	}
 
-	return appmsg.VoidMessage{}, apperr.ErrHandlerNotImplemented
+	return message.NewFindByNameMessageResult(got), nil
 }
