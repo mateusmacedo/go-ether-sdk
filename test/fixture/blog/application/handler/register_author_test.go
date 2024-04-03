@@ -1,83 +1,65 @@
-package handler
+package handler_test
 
 import (
-	"reflect"
 	"testing"
 
-	"github.com/mateusmacedo/go-ether-sdk/application/handler"
+	"github.com/mateusmacedo/go-ether-sdk/application/err"
 	"github.com/mateusmacedo/go-ether-sdk/application/message"
 
+	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/handler"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/repository"
+	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/service"
 )
-
-func TestWithAuthorRepository(t *testing.T) {
-	type args struct {
-		repo repository.AuthorRepository
-	}
-	tests := []struct {
-		name string
-		args args
-		want RegisterAuthorHandlerOption
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := WithAuthorRepository(tt.args.repo); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("WithAuthorRepository() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestNewRegisterAuthorHandler(t *testing.T) {
-	type args struct {
-		opts []RegisterAuthorHandlerOption
-	}
-	tests := []struct {
-		name string
-		args args
-		want handler.Handler
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NewRegisterAuthorHandler(tt.args.opts...); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewRegisterAuthorHandler() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
 
 func Test_registerAuthorHandler_Handle(t *testing.T) {
 	type fields struct {
+		srv  service.RegisterNewAuthorService
 		repo repository.AuthorRepository
 	}
 	type args struct {
 		m message.Message
 	}
+
 	tests := []struct {
 		name    string
 		fields  fields
 		args    args
 		want    message.Message
 		wantErr bool
+		errWant error
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test should return error when not type of valid message",
+			fields: fields{
+				srv:  func() service.RegisterNewAuthorService { return nil }(),
+				repo: func() repository.AuthorRepository { return nil }(),
+			},
+			args: args{
+				m: func() message.Message { return nil }(),
+			},
+			want:    nil,
+			wantErr: true,
+			errWant: err.ErrMessageNotSupported,
+		},
 	}
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			h := registerAuthorHandler{
-				repo: tt.fields.repo,
-			}
-			got, err := h.Handle(tt.args.m)
+		t.Run(tt.name, func(tR *testing.T) {
+			sut := handler.NewRegisterAuthorHandler(handler.WithAuthorRepository(tt.fields.repo), handler.WithAuthorService(tt.fields.srv))
+
+			got, err := sut.Handle(tt.args.m)
+
 			if (err != nil) != tt.wantErr {
-				t.Errorf("registerAuthorHandler.Handle() error = %v, wantErr %v", err, tt.wantErr)
+				tR.Errorf("registerAuthorHandler.Handle() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("registerAuthorHandler.Handle() = %v, want %v", got, tt.want)
+
+			if err != nil && err != tt.errWant {
+				tR.Errorf("registerAuthorHandler.Handle() error = %v, wantErr %v", err, tt.errWant)
+				return
+			}
+
+			if got != nil && got != tt.want {
+				tR.Errorf("registerAuthorHandler.Handle() = %v, want %v", got, tt.want)
 			}
 		})
 	}
