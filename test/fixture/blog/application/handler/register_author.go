@@ -39,11 +39,14 @@ func NewRegisterAuthorHandler(opts ...RegisterAuthorHandlerOption) handler.Handl
 	return &h
 }
 
-
-
-func (h *registerAuthorHandler) Handle(m message.Message) (message.Message, error){
+func (h *registerAuthorHandler) Handle(m message.Message) (message.Message, error) {
 	if _, ok := m.(*blogmsg.RegisterAuthorMessage); !ok {
 		return nil, err.ErrMessageNotSupported
 	}
+
+	if len(m.Content()) == 0{
+		return nil, err.ErrMessageContentEmpty
+	}
+
 	return nil, err.ErrHandlerNotImplemented
 }
