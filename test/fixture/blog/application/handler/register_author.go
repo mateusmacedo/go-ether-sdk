@@ -15,23 +15,23 @@ type registerAuthorHandler struct {
 	repo repository.AuthorRepository
 }
 
-type RegisterAuthorHandlerOption func(*registerAuthorHandler) error
+type registerAuthorHandlerOption func(*registerAuthorHandler) error
 
-func WithAuthorService(srv service.RegisterNewAuthorService) RegisterAuthorHandlerOption {
+func WithAuthorService(srv service.RegisterNewAuthorService) registerAuthorHandlerOption {
 	return func(h *registerAuthorHandler) error {
 		h.srv = srv
 		return nil
 	}
 }
 
-func WithAuthorRepository(repo repository.AuthorRepository) RegisterAuthorHandlerOption {
+func WithAuthorRepository(repo repository.AuthorRepository) registerAuthorHandlerOption {
 	return func(h *registerAuthorHandler) error {
 		h.repo = repo
 		return nil
 	}
 }
 
-func NewRegisterAuthorHandler(opts ...RegisterAuthorHandlerOption) handler.Handler {
+func NewRegisterAuthorHandler(opts ...registerAuthorHandlerOption) handler.Handler {
 	h := registerAuthorHandler{}
 	for _, opt := range opts {
 		opt(&h)
