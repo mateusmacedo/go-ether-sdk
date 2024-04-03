@@ -4,6 +4,7 @@ package mocks
 
 import (
 	model "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/model"
+	repository "github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/repository"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -13,23 +14,23 @@ type AuthorRepository struct {
 }
 
 // FindByName provides a mock function with given fields: name
-func (_m *AuthorRepository) FindByName(name string) (*model.Author, error) {
+func (_m *AuthorRepository) FindByName(name string) (repository.FindByNameResult, error) {
 	ret := _m.Called(name)
 
 	if len(ret) == 0 {
 		panic("no return value specified for FindByName")
 	}
 
-	var r0 *model.Author
+	var r0 repository.FindByNameResult
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string) (*model.Author, error)); ok {
+	if rf, ok := ret.Get(0).(func(string) (repository.FindByNameResult, error)); ok {
 		return rf(name)
 	}
-	if rf, ok := ret.Get(0).(func(string) *model.Author); ok {
+	if rf, ok := ret.Get(0).(func(string) repository.FindByNameResult); ok {
 		r0 = rf(name)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*model.Author)
+			r0 = ret.Get(0).(repository.FindByNameResult)
 		}
 	}
 
