@@ -73,6 +73,22 @@ func Test_findByNameHandler_Handle(t *testing.T) {
 			wantErr: true,
 			errWant: apperr.ErrMessageNotSupported,
 		},
+		{
+			name: "Test should return error when call find by name on repository and return error",
+			fields: fields{
+				repo: func() repository.FindByName {
+					repoImpl := mockRep.NewFindByName(t)
+					repoImpl.On("FindByName", "name").Return(nil, apperr.ErrInternalHandler)
+					return repoImpl
+				}(),
+			},
+			args: args{
+				m: message.NewFindByNameMessage("name"),
+			},
+			want:    nil,
+			wantErr: true,
+			errWant: apperr.ErrInternalHandler,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(tR *testing.T) {

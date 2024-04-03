@@ -44,5 +44,9 @@ func (h *findByNameHandler) Handle(m appmsg.Message) (appmsg.Message, error) {
 		return nil, apperr.ErrMessageNotSupported
 	}
 
+	if _, err := h.repo.FindByName(string(content)); err != nil {
+		return nil, err
+	}
+
 	return appmsg.VoidMessage{}, apperr.ErrHandlerNotImplemented
 }
