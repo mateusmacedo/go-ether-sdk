@@ -13,7 +13,7 @@ type RegisterNewAuthorService struct {
 }
 
 // RegisterNewAuthor provides a mock function with given fields: author
-func (_m *RegisterNewAuthorService) RegisterNewAuthor(author model.Author) error {
+func (_m *RegisterNewAuthorService) RegisterNewAuthor(author *model.Author) error {
 	ret := _m.Called(author)
 
 	if len(ret) == 0 {
@@ -21,7 +21,7 @@ func (_m *RegisterNewAuthorService) RegisterNewAuthor(author model.Author) error
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(model.Author) error); ok {
+	if rf, ok := ret.Get(0).(func(*model.Author) error); ok {
 		r0 = rf(author)
 	} else {
 		r0 = ret.Error(0)
