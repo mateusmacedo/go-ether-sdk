@@ -55,5 +55,9 @@ func (h *registerAuthorHandler) Handle(m message.Message) (message.Message, erro
 		return nil, err
 	}
 
-	return nil, err.ErrHandlerNotImplemented
+	if err := h.repo.Persist(author); err != nil {
+		return nil, err
+	}
+
+	return message.VoidMessage{}, err.ErrHandlerNotImplemented
 }
