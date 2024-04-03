@@ -5,10 +5,10 @@ import (
 )
 
 type FindByName interface {
-	FindByName(name string) (model.Author, error)
+	FindByName(name string) (*model.Author, error)
 }
 
 type AuthorRepository interface {
 	FindByName
-	Persist(author model.Author) error
+	Persist(author *model.Author) error
 }
