@@ -5,6 +5,7 @@ import (
 	apphdl "github.com/mateusmacedo/go-ether-sdk/application/handler"
 	appmsg "github.com/mateusmacedo/go-ether-sdk/application/message"
 
+	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/application/message"
 	"github.com/mateusmacedo/go-ether-sdk/test/fixture/blog/domain/repository"
 )
 
@@ -39,7 +40,7 @@ func (h *findByNameHandler) Handle(m appmsg.Message) (appmsg.Message, error) {
 		return nil, apperr.ErrMessageContentEmpty
 	}
 
-	if _, ok := m.(*appmsg.VoidMessage); !ok {
+	if _, ok := m.(*message.FindByNameMessage); !ok {
 		return nil, apperr.ErrMessageNotSupported
 	}
 
