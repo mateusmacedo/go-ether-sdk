@@ -11,6 +11,7 @@
         "resilience": "Components",
         "collection": "Cluster",
         "repository": "Database",
+        "domain": "Components",
     },
     "go.coverOnSave": true,
     "go.coverageDecorator": {
